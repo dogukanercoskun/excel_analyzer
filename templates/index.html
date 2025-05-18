@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Veri Analiz Aracı</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="text-center">Excel Veri Analiz Aracı</h1>
+                    </div>
+                    <div class="card-body">
+                        <!-- Flash mesajları -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                        
+                        <div class="text-center mb-4">
+                            <i class="fas fa-file-excel fa-4x text-success"></i>
+                            <p class="lead mt-3">Excel dosyanızı yükleyin ve güçlü analitik araçlarımızla verilerinizi analiz edin.</p>
+                        </div>
+
+                        <div class="upload-area" id="uploadArea">
+                            <form id="uploadForm" method="POST" action="{{ url_for('upload_file') }}" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <div class="text-center p-4 border rounded" 
+                                     id="dropZone"
+                                     ondragover="event.preventDefault(); document.getElementById('dropZone').classList.add('drag-over');"
+                                     ondragleave="document.getElementById('dropZone').classList.remove('drag-over');"
+                                     ondrop="handleDrop(event)">
+                                    <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                    <h4>Dosyanızı sürükleyin ve bırakın</h4>
+                                    <p>veya</p>
+                                    <input type="file" name="file" id="fileInput" class="d-none" accept=".xlsx,.xls,.csv">
+                                    <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fileInput').click()">
+                                        Dosya Seçin
+                                    </button>
+                                    <p id="selectedFileName" class="mt-2"></p>
+                                </div>
+                                <div class="mt-3 text-center">
+                                    <button type="submit" class="btn btn-primary" id="uploadBtn" disabled>
+                                        <i class="fas fa-upload"></i> Yükle ve Analiz Et
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="supported-formats mt-4">
+                            <p class="text-center text-secondary">Desteklenen formatlar: <span class="badge bg-success">.xlsx</span> <span class="badge bg-success">.xls</span> <span class="badge bg-success">.csv</span></p>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center text-muted">
+                        <p>Veri analizi ihtiyaçlarınız için güvenilir çözüm</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Sayfa yüklendi, JavaScript çalışıyor');
+            
+            // Form ve dosya elementlerini al
+            const uploadForm = document.getElementById('uploadForm');
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const selectedFileName = document.getElementById('selectedFileName');
+            
+            // Dosya seçildiğinde
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    console.log('Seçilen dosya:', file.name, 'Boyut:', file.size, 'bytes');
+                    selectedFileName.textContent = 'Seçilen dosya: ' + file.name;
+                    uploadBtn.disabled = false;
+                } else {
+                    selectedFileName.textContent = '';
+                    uploadBtn.disabled = true;
+                }
+            });
+            
+            // Form gönderildiğinde
+            uploadForm.addEventListener('submit', function(event) {
+                event.preventDefault(); // Formun normal gönderimini engelle
+                
+                console.log('Form gönderiliyor...');
+                
+                if (fileInput.files.length === 0) {
+                    alert('Lütfen bir dosya seçin');
+                    return false;
+                }
+                
+                // Yükleniyor... göster
+                uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yükleniyor...';
+                uploadBtn.disabled = true;
+                
+                // FormData oluştur
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('csrf_token', document.querySelector('input[name="csrf_token"]').value);
+                
+                // AJAX ile gönder
+                fetch(uploadForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    // Yönlendirmeleri takip et - önemli
+                    redirect: 'follow'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Yükleme başarılı!');
+                        console.log('Yönlendirme URL:', response.url);
+                        window.location.href = response.url; // Yönlendirmeyi takip et
+                    } else {
+                        throw new Error('Yükleme sırasında bir hata oluştu.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Hata:', error);
+                    // Butonu eski haline getir
+                    uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Yükle ve Analiz Et';
+                    uploadBtn.disabled = false;
+                    alert('Dosya yükleme hatası: ' + error.message);
+                });
+            });
+        });
+        
+        // Sürükle-bırak işlemi
+        function handleDrop(event) {
+            event.preventDefault();
+            document.getElementById('dropZone').classList.remove('drag-over');
+            
+            if (event.dataTransfer.files.length > 0) {
+                const file = event.dataTransfer.files[0];
+                console.log('Sürükle-bırak ile dosya alındı:', file.name);
+                
+                const fileInput = document.getElementById('fileInput');
+                
+                try {
+                    // Modern tarayıcılar için DataTransfer kullan
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
+                    
+                    // Dosya adını güncelle
+                    const selectedFileName = document.getElementById('selectedFileName');
+                    selectedFileName.textContent = 'Seçilen dosya: ' + file.name;
+                    document.getElementById('uploadBtn').disabled = false;
+                } catch (error) {
+                    console.error('Sürükle-bırak hatası:', error);
+                    alert('Tarayıcınız sürükle-bırak özelliğini desteklemiyor. Lütfen "Dosya Seçin" butonunu kullanın.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
