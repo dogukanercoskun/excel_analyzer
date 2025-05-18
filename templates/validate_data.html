@@ -38,6 +38,23 @@
                         <!-- Dosya Özeti -->
                         <div class="file-summary mb-4">
                             <h3>Dosya Özeti</h3>
+<<<<<<< HEAD
+=======
+                            
+                            {% if limited_analysis %}
+                            <div class="alert alert-warning" role="alert">
+                                <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>NumPy Sürüm Uyumsuzluğu!</h4>
+                                <p>Anaconda/Python ortamınızda NumPy sürüm uyumsuzluğu tespit edildi. Bu, veri analizi ve görselleştirme özelliklerini sınırlayabilir.</p>
+                                <hr>
+                                <p class="mb-0">Sorunu çözmek için terminalde <code>pip install numpy&lt;2.0.0</code> komutunu çalıştırabilir veya yeni bir Anaconda ortamı oluşturabilirsiniz.</p>
+                                <p class="text-muted mt-2 small">Hata: {{ stats.error }}</p>
+                                {% if stats.note %}
+                                <p class="text-muted small">{{ stats.note }}</p>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+>>>>>>> a1ef2a0 (ikinci commit: Excel veri analiz web uygulaması)
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="card bg-light">

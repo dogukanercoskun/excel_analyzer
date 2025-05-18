@@ -38,6 +38,9 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 1800  # 30 dakika
 app.config['WTF_CSRF_ENABLED'] = True
 app.config['WTF_CSRF_TIME_LIMIT'] = 3600  # 1 saat
 
+# Session cookie adını açıkça tanımla (Flask 2.3+ için gerekli)
+app.config['SESSION_COOKIE_NAME'] = 'excel_analyzer_session'
+
 # Session uygulamasini başlat
 sess = Session(app)
 
