@@ -36,9 +36,6 @@
                         <div class="progress mb-4">
                             <div class="progress-bar bg-primary" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">2/4 Adım</div>
                         </div>
-
-<<<<<<< HEAD
-=======
                         {% if limited_analysis %}
                         <div class="alert alert-warning" role="alert">
                             <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>NumPy Sürüm Uyumsuzluğu!</h4>
@@ -49,8 +46,6 @@
                             {% if stats.solution %}<p class="text-muted mt-2 small">Çözüm: {{ stats.solution }}</p>{% endif %}
                         </div>
                         {% endif %}
-
->>>>>>> a1ef2a0 (ikinci commit: Excel veri analiz web uygulaması)
                         <p class="lead">Verilerinizi daha iyi anlamak ve analizlerin daha doğru sonuçlar vermesi için aşağıdaki sütunlar hakkında bilgi ekleyin.</p>
                         
                         <form id="understandDataForm" action="{{ url_for('select_analysis') }}" method="post">
