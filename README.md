@@ -26,7 +26,7 @@ Python 3.9+
 Pip (Python paket yöneticisi)
 Adımlar
 Projeyi klonlayın veya dosyaları indirin:
-git clone https://github.com/kullanici/excel_analyzer.git
+git clone https://github.com/dogukanercoskun/excel_analyzer.git
 cd excel_analyzer
 Sanal ortam oluşturun (opsiyonel ama önerilir):
 python -m venv venv
